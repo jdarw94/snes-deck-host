@@ -8,40 +8,15 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
       width: 100vw; height: 100vh;
-      background: #000; color: #fff;
-      display: flex; flex-direction: column;
-      justify-content: center; align-items: center;
-      font-family: system-ui, sans-serif; overflow: hidden;
+      background: #000; overflow: hidden;
     }
-    #display-container {
+    #game {
       width: 100vw; height: 100vh;
-      display: flex; justify-content: center; align-items: center;
     }
-    #ui-container {
-      position: absolute; text-align: center; background: rgba(15, 15, 15, 0.95);
-      padding: 30px; border-radius: 12px; border: 1px solid #333; z-index: 10;
-    }
-    input[type="file"] { display: none; }
-    .btn {
-      background: #107c41; color: white; padding: 14px 28px;
-      border: none; border-radius: 6px; font-weight: bold;
-      cursor: pointer; font-size: 16px; margin-top: 16px;
-    }
-    .btn:hover { background: #1f9a55; }
   </style>
 </head>
 <body>
-  <div id="ui-container">
-    <h2>SNES Web Host</h2>
-    <p style="margin-top: 8px; color: #aaa;">Load a ROM file to boot directly into the game engine.</p>
-    <button class="btn" onclick="document.getElementById('rom-input').click()">Load ROM File</button>
-    <input type="file" id="rom-input" accept=".smc,.sfc,.zip" />
-  </div>
-
-  <div id="display-container">
-    <div id="game" style="width: 100%; height: 100%;"></div>
-  </div>
-
-  <script type="module" src="./main.js"></script>
+  <div id="game"></div>
+  <script src="./main.js?v=2.0"></script>
 </body>
 </html>
