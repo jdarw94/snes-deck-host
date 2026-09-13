@@ -27,32 +27,25 @@ async function getSavedRom() {
     });
 }
 
-function bootEmulator(romBuffer) {
+function launchEmulator(romBlobUrl) {
     document.getElementById("ui-container").style.display = "none";
-    const canvas = document.getElementById("canvas");
-    canvas.style.display = "block";
 
-    // Emscripten WASM module hooks
-    window.Module = {
-        canvas: canvas,
-        arguments: ["/game.sfc"],
-        preRun: [() => {
-            // Inject the byte array into Emscripten's virtual filesystem
-            Module.FS_createDataFile("/", "game.sfc", new Uint8Array(romBuffer), true, true);
-        }],
-        postRun: []
-    };
+    window.EJS_player = "#game";
+    window.EJS_core = "snes";
+    window.EJS_gameUrl = romBlobUrl;
+    window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
 
-    // Inject the glue script to initialize WebAssembly execution
     const script = document.createElement("script");
-    script.src = "./public/snes9x.js";
+    script.src = "https://cdn.emulatorjs.org/stable/data/loader.js";
     document.body.appendChild(script);
 }
 
 async function initApp() {
     const savedRom = await getSavedRom();
     if (savedRom) {
-        bootEmulator(savedRom);
+        const blob = new Blob([savedRom]);
+        const blobUrl = URL.createObjectURL(blob);
+        launchEmulator(blobUrl);
     }
 }
 
@@ -62,7 +55,10 @@ document.getElementById("rom-input").addEventListener("change", async (e) => {
 
     const buffer = await file.arrayBuffer();
     await saveRomToDeck(buffer);
-    bootEmulator(buffer);
+
+    const blob = new Blob([buffer]);
+    const blobUrl = URL.createObjectURL(blob);
+    launchEmulator(blobUrl);
 });
 
 initApp();
