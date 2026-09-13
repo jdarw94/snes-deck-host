@@ -27,11 +27,32 @@ async function getSavedRom() {
     });
 }
 
+function bootEmulator(romBuffer) {
+    document.getElementById("ui-container").style.display = "none";
+    const canvas = document.getElementById("canvas");
+    canvas.style.display = "block";
+
+    // Emscripten WASM module hooks
+    window.Module = {
+        canvas: canvas,
+        arguments: ["/game.sfc"],
+        preRun: [() => {
+            // Inject the byte array into Emscripten's virtual filesystem
+            Module.FS_createDataFile("/", "game.sfc", new Uint8Array(romBuffer), true, true);
+        }],
+        postRun: []
+    };
+
+    // Inject the glue script to initialize WebAssembly execution
+    const script = document.createElement("script");
+    script.src = "./public/snes9x.js";
+    document.body.appendChild(script);
+}
+
 async function initApp() {
     const savedRom = await getSavedRom();
     if (savedRom) {
-        document.getElementById("status-msg").innerText = "Saved ROM found in cache! Ready.";
-        console.log("Loaded cached ROM, bytes:", savedRom.byteLength);
+        bootEmulator(savedRom);
     }
 }
 
@@ -39,11 +60,9 @@ document.getElementById("rom-input").addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    document.getElementById("status-msg").innerText = "Saving ROM locally...";
     const buffer = await file.arrayBuffer();
     await saveRomToDeck(buffer);
-    document.getElementById("status-msg").innerText = "ROM Saved Successfully!";
-    console.log("Saved new ROM, bytes:", buffer.byteLength);
+    bootEmulator(buffer);
 });
 
 initApp();
