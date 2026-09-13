@@ -1,6 +1,6 @@
 window.EJS_player = "#game";
 window.EJS_core = "snes";
-window.EJS_gameUrl = "./chrono.sfc";
+window.EJS_gameUrl = "./chrono.zip";
 window.EJS_pathtodata = "https://cdn.emulatorjs.org/stable/data/";
 window.EJS_startOnLoaded = true;
 
